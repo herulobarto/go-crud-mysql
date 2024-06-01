@@ -5,9 +5,11 @@ import (
 	"text/template"
 
 	"github.com/herulobarto/go-crud-mysql/entities"
+	"github.com/herulobarto/go-crud-mysql/libraries"
 	"github.com/herulobarto/go-crud-mysql/models"
 )
 
+var validation = libraries.NewValidation()
 var pasienModel = models.NewPasienModel()
 
 func Index(response http.ResponseWriter, request *http.Request) {
@@ -47,9 +49,15 @@ func Add(response http.ResponseWriter, request *http.Request) {
 		pasien.Alamat = request.Form.Get("alamat")
 		pasien.NoHp = request.Form.Get("no_hp")
 
-		pasienModel.Create(pasien)
-		data := map[string]interface{}{
-			"pesan": "Data pasien berhasil disimpan",
+		var data = make(map[string]interface{})
+
+		vErrors := validation.Struct(pasien)
+
+		if vErrors != nil {
+			data["validation"] = vErrors
+		} else {
+			data["pesan"] = "Data pasien berhasil disimpan"
+			pasienModel.Create(pasien)
 		}
 
 		temp, _ := template.ParseFiles("views/pasien/add.html")
