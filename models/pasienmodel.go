@@ -23,6 +23,33 @@ func NewPasienModel() *PasienModel {
 	}
 }
 
+func (p *PasienModel) FindAll() ([]entities.Pasien, error) {
+
+	rows, err := p.conn.Query("SELECT * FROM pasien")
+	if err != nil {
+		return []entities.Pasien{}, err
+	}
+	defer rows.Close()
+
+	var dataPasien []entities.Pasien
+	for rows.Next() {
+		var pasien entities.Pasien
+		rows.Scan(&pasien.Id,
+			&pasien.NamaLengkap,
+			&pasien.NIK,
+			&pasien.JenisKelamin,
+			&pasien.TempatLahir,
+			&pasien.TanggalLahir,
+			&pasien.Alamat,
+			&pasien.NoHp)
+
+		dataPasien = append(dataPasien, pasien)
+	}
+
+	return dataPasien, nil
+
+}
+
 func (p *PasienModel) Create(pasien entities.Pasien) bool {
 	result, err := p.conn.Exec("INSERT INTO pasien (nama_lengkap, NIK, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, no_hp) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		pasien.NamaLengkap, pasien.NIK, pasien.JenisKelamin, pasien.TempatLahir, pasien.TanggalLahir, pasien.Alamat, pasien.NoHp)
