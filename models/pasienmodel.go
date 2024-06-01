@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/herulobarto/go-crud-mysql/config"
 	"github.com/herulobarto/go-crud-mysql/entities"
@@ -42,6 +43,17 @@ func (p *PasienModel) FindAll() ([]entities.Pasien, error) {
 			&pasien.TanggalLahir,
 			&pasien.Alamat,
 			&pasien.NoHp)
+
+		if pasien.JenisKelamin == "1" {
+			pasien.JenisKelamin = "Laki-laki"
+		} else {
+			pasien.JenisKelamin = "Perempuan"
+		}
+
+		// 2006-01-02 == yyyy-mm-dd
+		tgl_lahir, _ := time.Parse("2006-01-02", pasien.TanggalLahir)
+		// 02-01-2006 == dd-mm-yyyy
+		pasien.TanggalLahir = tgl_lahir.Format("02-01-2006")
 
 		dataPasien = append(dataPasien, pasien)
 	}
