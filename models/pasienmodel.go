@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/herulobarto/go-crud-mysql/config"
@@ -59,19 +58,15 @@ func (p *PasienModel) FindAll() ([]entities.Pasien, error) {
 	}
 
 	return dataPasien, nil
-
 }
 
-func (p *PasienModel) Create(pasien entities.Pasien) bool {
-	result, err := p.conn.Exec("INSERT INTO pasien (nama_lengkap, NIK, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, no_hp) VALUES (?, ?, ?, ?, ?, ?, ?)",
+func (p *PasienModel) Create(pasien entities.Pasien) error {
+	_, err := p.conn.Exec("INSERT INTO pasien (nama_lengkap, NIK, jenis_kelamin, tempat_lahir, tanggal_lahir, alamat, no_hp) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		pasien.NamaLengkap, pasien.NIK, pasien.JenisKelamin, pasien.TempatLahir, pasien.TanggalLahir, pasien.Alamat, pasien.NoHp)
 
 	if err != nil {
-		fmt.Println(err)
-		return false
+		return err
 	}
 
-	lastInsertId, _ := result.LastInsertId()
-
-	return lastInsertId > 0
+	return nil
 }

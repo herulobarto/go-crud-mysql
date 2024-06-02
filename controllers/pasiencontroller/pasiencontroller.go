@@ -13,7 +13,6 @@ var validation = libraries.NewValidation()
 var pasienModel = models.NewPasienModel()
 
 func Index(response http.ResponseWriter, request *http.Request) {
-
 	pasien, _ := pasienModel.FindAll()
 
 	data := map[string]interface{}{
@@ -28,16 +27,13 @@ func Index(response http.ResponseWriter, request *http.Request) {
 }
 
 func Add(response http.ResponseWriter, request *http.Request) {
-
 	if request.Method == http.MethodGet {
-
 		temp, err := template.ParseFiles("views/pasien/add.html")
 		if err != nil {
 			panic(err)
 		}
 		temp.Execute(response, nil)
 	} else if request.Method == http.MethodPost {
-
 		request.ParseForm()
 
 		var pasien entities.Pasien
@@ -54,22 +50,28 @@ func Add(response http.ResponseWriter, request *http.Request) {
 		vErrors := validation.Struct(pasien)
 
 		if vErrors != nil {
+			data["pasien"] = pasien
 			data["validation"] = vErrors
 		} else {
-			data["pesan"] = "Data pasien berhasil disimpan"
-			pasienModel.Create(pasien)
+			if err := pasienModel.Create(pasien); err != nil {
+				data["error"] = "Gagal menyimpan data pasien"
+			} else {
+				data["pesan"] = "Data pasien berhasil disimpan"
+			}
 		}
 
-		temp, _ := template.ParseFiles("views/pasien/add.html")
+		temp, err := template.ParseFiles("views/pasien/add.html")
+		if err != nil {
+			panic(err)
+		}
 		temp.Execute(response, data)
-
 	}
 }
 
 func Edit(response http.ResponseWriter, request *http.Request) {
-
+	// Implementasi untuk edit pasien
 }
 
 func Delete(response http.ResponseWriter, request *http.Request) {
-
+	// Implementasi untuk delete pasien
 }
