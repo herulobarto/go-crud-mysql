@@ -107,3 +107,9 @@ func (p *PasienModel) FindByID(id int64) (entities.Pasien, error) {
 
 	return pasien, nil
 }
+
+func (p *PasienModel) Delete(id int64) {
+
+	p.conn.Exec("DELETE FROM pasien WHERE id = ?", id)
+
+}

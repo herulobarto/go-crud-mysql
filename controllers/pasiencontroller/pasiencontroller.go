@@ -129,5 +129,12 @@ func Edit(response http.ResponseWriter, request *http.Request) {
 }
 
 func Delete(response http.ResponseWriter, request *http.Request) {
-	// Implementasi untuk delete pasien
+
+	queryString := request.URL.Query()
+	id, _ := strconv.ParseInt(queryString.Get("id"), 10, 64)
+
+	pasienModel.Delete(id)
+
+	http.Redirect(response, request, "/pasien", http.StatusSeeOther)
+
 }
