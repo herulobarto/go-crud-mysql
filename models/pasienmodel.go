@@ -70,3 +70,40 @@ func (p *PasienModel) Create(pasien entities.Pasien) error {
 
 	return nil
 }
+
+func (p *PasienModel) Find(id int64, pasien *entities.Pasien) error {
+
+	return p.conn.QueryRow("select * from pasien where id = ?", id).Scan(
+		&pasien.Id,
+		&pasien.NamaLengkap,
+		&pasien.NIK,
+		&pasien.JenisKelamin,
+		&pasien.TempatLahir,
+		&pasien.TanggalLahir,
+		&pasien.Alamat,
+		&pasien.NoHp)
+}
+
+func (p *PasienModel) Update(pasien entities.Pasien) error {
+
+	_, err := p.conn.Exec("UPDATE pasien SET nama_lengkap = ?, NIK = ?, jenis_kelamin = ?, tempat_lahir = ?, tanggal_lahir = ?, alamat = ?, no_hp = ? where id = ?",
+		pasien.NamaLengkap, pasien.NIK, pasien.JenisKelamin, pasien.TempatLahir, pasien.TanggalLahir, pasien.Alamat, pasien.NoHp, pasien.Id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *PasienModel) FindByID(id int64) (entities.Pasien, error) {
+	row := p.conn.QueryRow("SELECT * FROM pasien WHERE id = ?", id)
+
+	var pasien entities.Pasien
+	err := row.Scan(&pasien.Id, &pasien.NamaLengkap, &pasien.NIK, &pasien.JenisKelamin, &pasien.TempatLahir, &pasien.TanggalLahir, &pasien.Alamat, &pasien.NoHp)
+	if err != nil {
+		return pasien, err
+	}
+
+	return pasien, nil
+}
